@@ -24,7 +24,6 @@ const Dashboard = () => {
 
       {/*Profile..*/}
       {tab === "profile" && <DashProfile />}
-      <DashProfile />
     </div>
   );
 };
