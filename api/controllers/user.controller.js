@@ -32,24 +32,50 @@ export const updateUser = async (req, res, next) => {
         errorHandler(400, "Username only contain letters and numbers.")
       );
     }
+  }
 
-    try {
-      const updateUser = await User.findByIdAndUpdate(
-        req.params.userId,
-        {
-          $set: {
-            username: req.body.username,
-            email: req.body.email,
-            profilePicture: req.body.profilePicture,
-            password: req.body.password,
-          },
-        },
-        { new: true }
-      );
-      const { password, ...rest } = updateUser._doc;
-      res.status(200).json(rest);
-    } catch (error) {
-      next(error);
+  try {
+    const existingUser = await User.findById(req.params.userId);
+    if (!existingUser) {
+      return next(errorHandler(404, "User not found."));
     }
+
+    // Check if any data has been updated
+    const isDataChanged = Object.keys(req.body).some(
+      (key) => req.body[key] !== existingUser[key]
+    );
+
+    console.log("isDataChanged", isDataChanged);
+
+    if (!isDataChanged) {
+      return next(errorHandler(400, "No data has been updated."));
+    }
+
+    // Update user data
+    const updatedUserData = {
+      username: req.body.username || existingUser.username,
+      email: req.body.email || existingUser.email,
+      profilePicture: req.body.profilePicture || existingUser.profilePicture,
+    };
+
+    if (req.body.password) {
+      if (req.body.password.length < 6) {
+        return next(
+          errorHandler(400, "Password must be at least 6 characters.")
+        );
+      }
+      updatedUserData.password = bcryptjs.hashSync(req.body.password, 10);
+    }
+
+    const updateUser = await User.findByIdAndUpdate(
+      req.params.userId,
+      updatedUserData,
+      { new: true }
+    );
+
+    const { password, ...rest } = updateUser._doc;
+    res.status(200).json(rest);
+  } catch (error) {
+    next(error);
   }
 };
