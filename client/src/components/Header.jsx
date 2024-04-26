@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { AiOutlineSearch } from "react-icons/ai";
 import { FaMoon, FaSun } from "react-icons/fa";
 import { useSelector, useDispatch } from "react-redux";
-import { signOutSuccess } from "../redux/user/userSlice";
+import { signOutFailure, signOutSuccess } from "../redux/user/userSlice";
 import { toggleTheme } from "../redux/theme/themeSlice";
 
 const Header = () => {
@@ -22,12 +22,11 @@ const Header = () => {
       });
       const data = await res.json();
       if (!res.ok) {
-        console.log(data.message);
-      } else {
-        dispatch(signOutSuccess());
+        dispatch(signOutFailure(data.message || "Sign out failed."));
       }
+      dispatch(signOutSuccess());
     } catch (error) {
-      console.log(error.message);
+      dispatch(signOutFailure(error.message));
     }
   };
 

@@ -26,13 +26,12 @@ const Oauth = () => {
         }),
       });
       const data = await res.json();
-      console.log("datassssss", data);
       if (res.ok) {
         dispatch(signInSuccess(data));
         navigate("/");
       }
     } catch (error) {
-      console.log(error);
+      throw new Error(error.message);
     }
   };
   return (

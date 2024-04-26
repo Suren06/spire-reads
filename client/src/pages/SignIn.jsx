@@ -55,10 +55,7 @@ const SignIn = () => {
             </span>
             Reads
           </Link>
-          <p className="text-sm mt-5">
-            This is a demo project. ou can Sign in with your email and password
-            or with Google
-          </p>
+          <p className="text-2xl mt-5">Stories Worth Sharing</p>
         </div>
         {/*right side */}
         <div className="flex-1">
